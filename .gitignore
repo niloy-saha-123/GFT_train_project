@@ -53,6 +53,7 @@ secrets/
 
 # Data and artifacts
 data/raw/
+data/inbox/
 data/interim/
 data/processed/
 data/external/

@@ -1,0 +1,45 @@
+camera_id: camera_01
+roi_polygon:
+  - [45, 150]
+  - [1265, 150]
+  - [1265, 715]
+  - [45, 715]
+ignore_rectangles:
+  - [960, 645, 320, 70]
+lanes:
+  - lane_id: lane_far
+    polygon:
+      - [600, 255]
+      - [1275, 210]
+      - [1275, 430]
+      - [530, 470]
+    axis_start: [1260, 320]
+    axis_end: [580, 380]
+    direction_positive: left_to_right
+    direction_negative: right_to_left
+    marker:
+      line_a:
+        - [1040, 245]
+        - [1000, 455]
+      line_b:
+        - [700, 275]
+        - [660, 500]
+      distance_m: 65.0
+  - lane_id: lane_middle
+    polygon:
+      - [350, 360]
+      - [1275, 315]
+      - [1275, 615]
+      - [260, 665]
+    axis_start: [1250, 470]
+    axis_end: [330, 555]
+    direction_positive: left_to_right
+    direction_negative: right_to_left
+    marker:
+      line_a:
+        - [1000, 335]
+        - [960, 610]
+      line_b:
+        - [650, 380]
+        - [610, 670]
+      distance_m: 75.0

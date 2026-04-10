@@ -1,0 +1,15 @@
+source: data/raw/camera_01_2026_04_09_233235.MOV
+project: outputs/v0_1
+name: baseline
+model: yolov8n.pt
+mode: track
+tracker: bytetrack.yaml
+conf: 0.25
+train_class: 6
+camera_id: camera_01
+track_id: track_01
+tripwire_a: 0.35
+tripwire_b: 0.65
+distance_m: 30.0
+show: false
+save_video: true

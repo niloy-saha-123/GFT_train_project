@@ -25,11 +25,18 @@ PyYAML
 pydantic
 tqdm
 rich
+streamlit
 
 # Visualization and notebooks
 matplotlib
 seaborn
 jupyter
+
+# Integrations and exports
+gspread
+google-auth
+openpyxl
+pytesseract
 
 # Quality and tests
 pytest

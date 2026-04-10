@@ -397,6 +397,172 @@ This repository starts with packages for:
 
 See `requirements.txt` for the exact package list.
 
+## Quickstart: v0.1 Baseline Pipeline
+
+Use this baseline to get first-pass outputs for:
+
+- train presence
+- pass start/end time
+- left/right direction estimate
+- optional speed estimate from virtual tripwires
+
+### 1. Put a video in `data/raw/`
+
+Example:
+
+```bash
+cp /path/to/video.mp4 data/raw/v0_1.mp4
+```
+
+### 2. Update baseline config
+
+Edit `configs/v0_1_baseline.yaml`:
+
+- `source`: video path
+- `mode`: `track` or `detect`
+- `tripwire_a` and `tripwire_b`: normalized x positions (0 to 1)
+- `distance_m`: real-world distance between tripwires in meters
+- `camera_id` and `track_id`
+
+### 3. Run pipeline
+
+```bash
+python src/rail_video_intelligence/run_v0_1.py --config configs/v0_1_baseline.yaml
+```
+
+Optional overrides:
+
+```bash
+python src/rail_video_intelligence/run_v0_1.py \
+  --config configs/v0_1_baseline.yaml \
+  --source data/raw/your_video.mp4 \
+  --name first_pass \
+  --show
+
+# detection-only mode (no tracker/lap dependency)
+python src/rail_video_intelligence/run_v0_1.py \
+  --config configs/v0_1_baseline.yaml \
+  --mode detect \
+  --name detect_only
+```
+
+### 4. Check outputs
+
+- Annotated track video:
+  `outputs/v0_1/<run_name>/<video_name>.mp4`
+- Event summary JSON:
+  `outputs/v0_1/<run_name>/event_summary.json`
+
+## Rail Video Ops v1 (Notebook + Dashboard + Google Sheets)
+
+This repository now includes a modular v1 pipeline under `src/rail_video_intelligence/pipeline/`.
+
+### v1 capabilities
+
+- single-video and batch processing
+- per-lane event split (supports overlapping opposite-direction trains)
+- direction from lane axis projection
+- speed from per-lane marker crossing + known real distance
+- no-train audit row generation
+- Google Sheets upsert by `video_id + train_index`
+- Excel/CSV export per run
+- source video deletion only after successful Sheets sync
+
+### v1 folder highlights
+
+- `configs/pipeline.yaml`: processing + Sheets settings
+- `configs/camera_profiles/camera_01.yaml`: ROI, ignore mask, lanes, speed markers, direction map
+- `src/rail_video_intelligence/run_pipeline_v1.py`: CLI pipeline runner
+- `streamlit_app.py`: upload dashboard
+- `notebooks/01..05_*.ipynb`: notebook workflow
+
+### Run v1 via CLI
+
+```bash
+python src/rail_video_intelligence/run_pipeline_v1.py \
+  --pipeline-config configs/pipeline.yaml \
+  --camera-profile configs/camera_profiles/camera_01.yaml \
+  --source data/raw/camera_01_2026_04_09_233235.MOV \
+  --run-name pilot_single
+
+# local popup window while processing (desktop only)
+python src/rail_video_intelligence/run_pipeline_v1.py \
+  --pipeline-config configs/pipeline.yaml \
+  --camera-profile configs/camera_profiles/camera_01.yaml \
+  --source data/raw/camera_01_2026_04_09_233235.MOV \
+  --run-name pilot_show \
+  --show-live
+```
+
+Batch mode:
+
+```bash
+python src/rail_video_intelligence/run_pipeline_v1.py \
+  --pipeline-config configs/pipeline.yaml \
+  --camera-profile configs/camera_profiles/camera_01.yaml \
+  --source-dir data/raw \
+  --run-name pilot_batch
+```
+
+Delete source file only after successful Sheets sync:
+
+```bash
+python src/rail_video_intelligence/run_pipeline_v1.py \
+  --pipeline-config configs/pipeline.yaml \
+  --camera-profile configs/camera_profiles/camera_01.yaml \
+  --source data/raw/camera_01_2026_04_09_233235.MOV \
+  --run-name pilot_delete_on_success \
+  --delete-on-success
+```
+
+### Run dashboard
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Dashboard features:
+
+- upload one or many videos
+- process queue
+- show per-video status
+- preview annotated output videos
+- write Sheets rows
+- delete source videos only when sync succeeds
+- preview uses demo overlay video (lanes, marker lines, boxes, IDs, event labels)
+
+### Google Sheets setup
+
+Edit `configs/pipeline.yaml`:
+
+- `sheets.enabled: true`
+- `sheets.spreadsheet_id: <google_sheet_id>`
+- `sheets.worksheet_name: train_events`
+- `sheets.credentials_path: /absolute/path/to/service_account.json`
+
+Sheet row schema written by pipeline:
+
+`video_id, train_index, camera_id, track_id, train_detected, no_train_flag, start_time_s, end_time_s, duration_s, direction, speed_mph, speed_confidence, locomotive_count, carriage_count, company_name, company_confidence, detection_confidence, quality_flag, processed_at_utc, source_video, notes`
+
+### GPU selection
+
+Set in `configs/pipeline.yaml`:
+
+- `pipeline.device: auto` (default)
+- `pipeline.device: cuda:0` (force first NVIDIA GPU)
+- `pipeline.device: cpu` (force CPU)
+- `pipeline.show_live: true` for popup windows on local desktop runs
+- `pipeline.save_demo_overlay: true` to save `demo_overlay.mp4` with lane/marker visuals
+
+### Notebook sequence
+
+0. `notebooks/00_master_end_to_end.ipynb` (single notebook full flow)
+1. `notebooks/01_ingest_qc.ipynb`
+2. `notebooks/02_calibration_markers.ipynb`
+3. `notebooks/03_detection_tracking.ipynb`
+4. `notebooks/04_event_aggregation_speed_count_company.ipynb`
+5. `notebooks/05_google_sheets_sync_ops.ipynb`
+
 ## First Deliverables
 
 Suggested first engineering tasks:

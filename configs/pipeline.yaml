@@ -1,0 +1,31 @@
+output_root: outputs/v1
+
+pipeline:
+  model_path: yolov8n.pt
+  tracker: bytetrack.yaml
+  mode: track
+  device: auto
+  show_live: false
+  save_demo_overlay: true
+  confidence: 0.25
+  train_class_names:
+    - train
+  locomotive_class_names:
+    - locomotive
+    - engine
+  carriage_class_names:
+    - carriage
+    - railcar
+    - coach
+    - wagon
+  event_gap_frames: 30
+  merge_gap_frames: 20
+  min_event_frames: 6
+
+sheets:
+  enabled: true
+  spreadsheet_id: "1tT8MddKnXwVivxwtijcCzqansriU553yqnLbRb_XAjw"
+  worksheet_name: train_events
+  credentials_path: "secrets/google_service_account.json"
+  retries: 4
+  backoff_seconds: 1.5
