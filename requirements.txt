@@ -19,6 +19,7 @@ albumentations
 
 # Tracking and CV workflow
 supervision
+lap>=0.5.12
 
 # Config and utilities
 PyYAML
