@@ -1,0 +1,37 @@
+# Core data
+numpy
+pandas
+scipy
+pyarrow
+
+# Computer vision and video
+opencv-python
+ffmpeg-python
+Pillow
+imageio
+
+# Machine learning
+scikit-learn
+torch
+torchvision
+ultralytics
+albumentations
+
+# Tracking and CV workflow
+supervision
+
+# Config and utilities
+PyYAML
+pydantic
+tqdm
+rich
+
+# Visualization and notebooks
+matplotlib
+seaborn
+jupyter
+
+# Quality and tests
+pytest
+black
+ruff
